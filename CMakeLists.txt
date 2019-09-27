@@ -27,8 +27,7 @@ ExternalProject_Add(jsoncpp
     INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 find_package(jsoncpp)
-add_dependencies(log jsoncpp)
-add_dependencies(log core)
+add_dependencies(log core jsoncpp)
 target_link_libraries(log core jsoncpp_lib)
 target_include_directories(log 
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/inc/private" "${CMAKE_SOURCE_DIR}/include"
@@ -51,5 +50,5 @@ install(TARGETS log
     COMPONENT library
 )
 
-file(GLOB INCLUDES inc/public/*.h)
+file(GLOB INCLUDES inc/public/*.h inc/public/*.config)
 install(FILES ${INCLUDES} DESTINATION include/log)
