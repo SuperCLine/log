@@ -1,5 +1,7 @@
 file(GLOB SOURCES src/*.cpp)
 
+add_subdirectory(external/jsoncpp)
+
 if (BUILD_LOG_STATIC)
     add_library(log STATIC ${SOURCES})
 else ()
@@ -18,17 +20,19 @@ endif ()
 # set(CMAKE_REQUIRED_FLAGS -std=c++17)
 # set_property(TARGET log PROPERTY CXX_STANDARD 17)
 
-include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-ExternalProject_Add(jsoncpp
-    GIT_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git"
-    UPDATE_COMMAND git pull "https://github.com/open-source-parsers/jsoncpp.git"
-    # GIT_TAG 1.9.1
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/jsoncpp
-    INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR})
+# include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+# ExternalProject_Add(jsoncpp
+#     GIT_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git"
+#     UPDATE_COMMAND git pull "https://github.com/open-source-parsers/jsoncpp.git"
+#     # GIT_TAG 1.9.1
+#     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/jsoncpp
+#     INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
-find_package(jsoncpp)
-add_dependencies(log core jsoncpp)
+# find_package(jsoncpp)
+
+add_dependencies(log core)
 target_link_libraries(log core jsoncpp_lib)
+
 target_include_directories(log 
     PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/inc/private" "${CMAKE_SOURCE_DIR}/include"
     PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/inc/public"

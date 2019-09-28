@@ -32,6 +32,15 @@ log_mgr::~log_mgr(void)
 
 	app_safe_delete(m_work_queue);
 	app_safe_delete(m_property);
+
+	{
+		ulocker scoped_locker(m_log_buf_list_mutex);
+		for (log_buf_list_type::iterator itr = m_log_buf_list.begin(); itr != m_log_buf_list.end(); ++itr)
+		{
+			m_pool->cycle(*itr);
+		}
+		m_log_buf_list.clear();
+	}
 	app_safe_delete(m_pool);
 
 	for (log_map_type::iterator itr = m_log_map.begin(); itr != m_log_map.end(); ++itr)
@@ -105,6 +114,9 @@ void log_mgr::log(ELogType type, const char* tag, const char* log)
 		app_snprintf(buf->data, buf->get_size(), "[%s] [%s] [%s] %s", core_time::curtime_to_string(ETF_COLON), type_str, tag, log);
 
 		m_work_queue->add_request(m_work_channel, 0, buf);
+
+		ulocker scoped_locker(m_log_buf_list_mutex);
+		m_log_buf_list.push_back(buf);
 	}
 	else
 	{
@@ -158,11 +170,21 @@ void log_mgr::logf(ELogType type, const char* tag, const char* format, ...)
 	log(type, tag, buf);
 }
 
+bool log_mgr::can_handle_request(const core_workqueue::request* req, const core_workqueue* srcQ)
+{
+	return true;
+}
+
 core_workqueue::response* log_mgr::handle_request(const core_workqueue::request* req, const core_workqueue* srcQ)
 {
 	log_pool::log_buffer* buf = (log_pool::log_buffer*)(req->get_data());
 
 	do_log(buf->type, buf->data);
+
+	{
+		ulocker scoped_locker(m_log_buf_list_mutex);
+		m_log_buf_list.remove(buf);
+	}
 
 	m_pool->cycle(buf);
 
