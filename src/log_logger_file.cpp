@@ -23,6 +23,7 @@ ELoggerType log_logger_file::log_type(void)
 
 void log_logger_file::log(ELogType type, const char* log)
 {
+	app_unreferenced(type);
 	m_logger << log << "\n";
 	m_logger.flush();
 }

@@ -32,7 +32,7 @@ ustring log_property::serialize(void)
 	Json::Value logger_array;
 	Json::Value logger_item;
 
-	logger_item["type"] = ELoggerType:: ELT_COSOLE;
+	logger_item["type"] = ELoggerType::ELT_CONSOLE;
 	logger_item["name"] = "";
 	logger_array.append(logger_item);
 
@@ -101,7 +101,7 @@ bool log_property::deserialize(const ustring& name)
 		const Json::Value& filter = root["filter"];
 		const Json::Value& tag = root["tag"];
 
-		for (int32 i = 0; i < logger.size(); ++i)
+		for (uint32 i = 0; i < logger.size(); ++i)
 		{
 			logger_type data;
 			data.type = (ELoggerType)logger[i]["type"].asInt();
@@ -114,7 +114,7 @@ bool log_property::deserialize(const ustring& name)
 		m_impl->m_filter_map["err"] = filter["err"].asBool();
 		m_impl->m_filter_map["perf"] = filter["perf"].asBool();
 
-		for (int32 i = 0; i < tag.size(); ++i)
+		for (uint32 i = 0; i < tag.size(); ++i)
 		{
 			m_impl->m_tag_map[tag[i].asString()] = true;
 		}

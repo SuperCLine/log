@@ -67,7 +67,7 @@ bool log_mgr::init(const char* config)
 		ELoggerType type = (*itr).type;
 		switch (type)
 		{
-		case ELoggerType::ELT_COSOLE:
+		case ELoggerType::ELT_CONSOLE:
 			logger = new log_logger_console(type);
 			break;
 		case ELoggerType::ELT_FILE_DEBUG:
@@ -129,9 +129,9 @@ void log_mgr::log(ELogType type, const char* tag, const char* log)
 
 void log_mgr::do_log(ELogType type, const char* log)
 {
-	if (m_log_map[ELT_COSOLE])
+	if (m_log_map[ELT_CONSOLE])
 	{
-		m_log_map[ELT_COSOLE]->log(type, log);
+		m_log_map[ELT_CONSOLE]->log(type, log);
 	}
 
 	interface_logger* logger = NULL;
@@ -172,11 +172,14 @@ void log_mgr::logf(ELogType type, const char* tag, const char* format, ...)
 
 bool log_mgr::can_handle_request(const core_workqueue::request* req, const core_workqueue* srcQ)
 {
+	app_unreferenced(req);
+	app_unreferenced(srcQ);
 	return true;
 }
 
 core_workqueue::response* log_mgr::handle_request(const core_workqueue::request* req, const core_workqueue* srcQ)
 {
+	app_unreferenced(srcQ);
 	log_pool::log_buffer* buf = (log_pool::log_buffer*)(req->get_data());
 
 	do_log(buf->type, buf->data);

@@ -6,7 +6,7 @@ __BEGIN_NAMESPACE
 
 log_logger_console::log_logger_console(ELoggerType type)
 {
-
+	app_unreferenced(type);
 }
 
 log_logger_console::~log_logger_console(void)
@@ -16,7 +16,7 @@ log_logger_console::~log_logger_console(void)
 
 ELoggerType log_logger_console::log_type(void)
 {
-	return ELoggerType::ELT_COSOLE;
+	return ELoggerType::ELT_CONSOLE;
 }
 
 #if defined(WIN32) || defined(_WIN32)
