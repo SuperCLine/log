@@ -31,7 +31,7 @@ void log_logger_file::log(ELogType type, const char* log)
 void log_logger_file::init(const ustring& name)
 {
 	char exe_path[app_max_path] = { 0 };
-	if (!app_get_exedir(NULL, exe_path, app_max_path))
+	if (!core_util::get_exedir(exe_path, app_max_path))
 		return;
 
 	ustring cur_path = core_util::get_file_path(exe_path);

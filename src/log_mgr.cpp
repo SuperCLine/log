@@ -162,7 +162,7 @@ void log_mgr::logf(ELogType type, const char* tag, const char* format, ...)
 		return;
 
 	char buf[512] = { 0 };
-	va_list vlist;
+	std::va_list vlist;
 	va_start(vlist, format);
 	app_vsnprintf(buf, app_array_len(buf), format, vlist);
 	va_end(vlist);
