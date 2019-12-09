@@ -75,8 +75,11 @@ ustring log_property::serialize(void)
 	Json::StreamWriterBuilder builder;
 	return Json::writeString(builder, root);
 #else
-	Json::FastWriter writer;
-	return writer.write(root);
+	//Json::FastWriter writer;
+	//return writer.write(root);
+
+	Json::StreamWriterBuilder builder;
+	return Json::writeString(builder, root);
 #endif
 
 }
