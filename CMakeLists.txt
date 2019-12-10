@@ -19,6 +19,7 @@ if (WIN32)
 else ()
 	set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -std=c++11 -O0 -W -Wall -g -ggdb")
 	set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -std=c++11 -rdynamic -O2 -W -Wall -DNDEBUG")
+	target_link_libraries(log pthread)
 endif ()
 
 # set(CMAKE_CXX_STANDARD_REQUIRED ON)
