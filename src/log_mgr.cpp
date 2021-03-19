@@ -24,6 +24,11 @@ log_mgr::log_mgr(void)
 
 log_mgr::~log_mgr(void)
 {
+	if (m_property->is_asyn())
+	{
+		m_waitgroup.wait();
+	}
+
 	if (m_work_queue)
 	{
 		m_work_queue->remove_request_handler(m_work_channel, this);
@@ -52,10 +57,10 @@ log_mgr::~log_mgr(void)
 
 bool log_mgr::init(const char* config)
 {
-	m_type_string_map.insert(umap<ELogType, ustring>::value_type(ELT_DEBUG, "DEBUG"));
-	m_type_string_map.insert(umap<ELogType, ustring>::value_type(ELT_INFO, "INFO"));
-	m_type_string_map.insert(umap<ELogType, ustring>::value_type(ELT_ERROR, "ERROR"));
-	m_type_string_map.insert(umap<ELogType, ustring>::value_type(ELT_PERF, "PERF"));
+	m_type_string_map.insert(umap<ELogType, ustring>::value_type(ELogType::Debug, "DEBUG"));
+	m_type_string_map.insert(umap<ELogType, ustring>::value_type(ELogType::Info, "INFO"));
+	m_type_string_map.insert(umap<ELogType, ustring>::value_type(ELogType::Error, "ERROR"));
+	m_type_string_map.insert(umap<ELogType, ustring>::value_type(ELogType::Perf, "PERF"));
 
 	m_property = new log_property();
 	m_property->deserialize(config);
@@ -67,19 +72,19 @@ bool log_mgr::init(const char* config)
 		ELoggerType type = (*itr).type;
 		switch (type)
 		{
-		case ELoggerType::ELT_CONSOLE:
+		case ELoggerType::Console:
 			logger = new log_logger_console(type);
 			break;
-		case ELoggerType::ELT_FILE_DEBUG:
+		case ELoggerType::FileDebug:
 			logger = new log_logger_file(type, (*itr).name);
 			break;
-		case ELoggerType::ELT_FILE_INFO:
+		case ELoggerType::FileInfo:
 			logger = new log_logger_file(type, (*itr).name);
 			break;
-		case ELoggerType::ELT_FILE_ERROR:
+		case ELoggerType::FileError:
 			logger = new log_logger_file(type, (*itr).name);
 			break;
-		case ELoggerType::ELT_FILE_PERF:
+		case ELoggerType::FilePerf:
 			logger = new log_logger_file(type, (*itr).name);
 			break;
 		}
@@ -111,17 +116,19 @@ void log_mgr::log(ELogType type, const char* tag, const char* log)
 	{
 		log_pool::log_buffer* buf = m_pool->get();
 		buf->init(type);
-		app_snprintf(buf->data, buf->get_size(), "[%s] [%s] [%s] %s", core_time::curtime_to_string(ETF_COLON), type_str, tag, log);
+		app_snprintf(buf->data, buf->get_size(), "[%s] [%s] [%s] %s", core_time::curtime_to_string(ETimeFlag::COLON), type_str, tag, log);
 
 		m_work_queue->add_request(m_work_channel, 0, buf);
 
 		ulocker scoped_locker(m_log_buf_list_mutex);
 		m_log_buf_list.push_back(buf);
+
+		m_waitgroup.add();
 	}
 	else
 	{
 		char buf[512] = { 0 };
-		app_snprintf(buf, 512, "[%s] [%s] [%s] %s", core_time::curtime_to_string(ETF_COLON), type_str, tag, log);
+		app_snprintf(buf, 512, "[%s] [%s] [%s] %s", core_time::curtime_to_string(ETimeFlag::COLON), type_str, tag, log);
 
 		do_log(type, buf);
 	}
@@ -129,25 +136,25 @@ void log_mgr::log(ELogType type, const char* tag, const char* log)
 
 void log_mgr::do_log(ELogType type, const char* log)
 {
-	if (m_log_map[ELT_CONSOLE])
+	if (m_log_map[ELoggerType::Console])
 	{
-		m_log_map[ELT_CONSOLE]->log(type, log);
+		m_log_map[ELoggerType::Console]->log(type, log);
 	}
 
 	interface_logger* logger = NULL;
 	switch (type)
 	{
-	case ELT_DEBUG:
-		logger = m_log_map[ELT_FILE_DEBUG];
+	case ELogType::Debug:
+		logger = m_log_map[ELoggerType::FileDebug];
 		break;
-	case ELT_INFO:
-		logger = m_log_map[ELT_FILE_INFO];
+	case ELogType::Info:
+		logger = m_log_map[ELoggerType::FileInfo];
 		break;
-	case ELT_ERROR:
-		logger = m_log_map[ELT_FILE_ERROR];
+	case ELogType::Error:
+		logger = m_log_map[ELoggerType::FileError];
 		break;
-	case ELT_PERF:
-		logger = m_log_map[ELT_FILE_PERF];
+	case ELogType::Perf:
+		logger = m_log_map[ELoggerType::FilePerf];
 		break;
 	}
 	if (logger)
@@ -187,6 +194,8 @@ core_workqueue::response* log_mgr::handle_request(const core_workqueue::request*
 	{
 		ulocker scoped_locker(m_log_buf_list_mutex);
 		m_log_buf_list.remove(buf);
+
+		m_waitgroup.done();
 	}
 
 	m_pool->cycle(buf);

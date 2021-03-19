@@ -2,8 +2,8 @@
 |
 | COPYRIGHT (C) 2018 - 2026 All Right Reserved
 |
-| FILE NAME  : \log\inc\private\log_mgr.h
-| AUTHOR     : CLine
+| FILE NAME  : \core.log\inc\private\log_mgr.h
+| AUTHOR     : https://supercline.com/
 | PURPOSE    :
 |
 | SPEC       :
@@ -12,7 +12,7 @@
 |
 | Ver      Date            By              Details
 | -----    -----------    -------------   ----------------------
-| 1.0      2019-9-25      CLine           Created
+| 1.0      2019-9-25      SuperCLine           Created
 |
 +-----------------------------------------------------------------------------*/
 
@@ -56,6 +56,7 @@ private:
 
 	log_buf_list_type		m_log_buf_list;
 	umutex					m_log_buf_list_mutex;
+	core_waitgroup			m_waitgroup;
 
 	umap<ELogType, ustring> m_type_string_map;
 };

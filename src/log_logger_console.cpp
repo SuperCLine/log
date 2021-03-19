@@ -16,7 +16,7 @@ log_logger_console::~log_logger_console(void)
 
 ELoggerType log_logger_console::log_type(void)
 {
-	return ELoggerType::ELT_CONSOLE;
+	return ELoggerType::Console;
 }
 
 #if defined(WIN32) || defined(_WIN32)
@@ -71,16 +71,16 @@ void log_logger_console::log(ELogType type, const char* log)
 {
 	switch (type)
 	{
-	case ELT_DEBUG:
+	case ELogType::Debug:
 		std::cout << color_debug << log << color_default << std::endl;
 		break;
-	case ELT_INFO:
+	case ELogType::Info:
 		std::cout << color_default << log << color_default << std::endl;
 		break;
-	case ELT_ERROR:
+	case ELogType::Error:
 		std::cout << color_error << log << color_default << std::endl;
 		break;
-	case ELT_PERF:
+	case ELogType::Perf:
 		std::cout << color_perf << log << color_default << std::endl;
 		break;
 	}

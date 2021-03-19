@@ -32,23 +32,23 @@ ustring log_property::serialize(void)
 	Json::Value logger_array;
 	Json::Value logger_item;
 
-	logger_item["type"] = ELoggerType::ELT_CONSOLE;
+	logger_item["type"] = (int)ELoggerType::Console;
 	logger_item["name"] = "";
 	logger_array.append(logger_item);
 
-	logger_item["type"] = ELoggerType::ELT_FILE_DEBUG;
+	logger_item["type"] = (int)ELoggerType::FileDebug;
 	logger_item["name"] = "debug.log";
 	logger_array.append(logger_item);
 
-	logger_item["type"] = ELoggerType::ELT_FILE_INFO;
+	logger_item["type"] = (int)ELoggerType::FileInfo;
 	logger_item["name"] = "info.log";
 	logger_array.append(logger_item);
 
-	logger_item["type"] = ELoggerType::ELT_FILE_ERROR;
+	logger_item["type"] = (int)ELoggerType::FileError;
 	logger_item["name"] = "err.log";
 	logger_array.append(logger_item);
 
-	logger_item["type"] = ELoggerType::ELT_FILE_PERF;
+	logger_item["type"] = (int)ELoggerType::FilePerf;
 	logger_item["name"] = "perf.log";
 	logger_array.append(logger_item);
 	

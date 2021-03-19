@@ -2,8 +2,8 @@
 |
 | COPYRIGHT (C) 2018 - 2026 All Right Reserved
 |
-| FILE NAME  : \log\inc\private\stdafx.h
-| AUTHOR     : CLine
+| FILE NAME  : \core.log\inc\private\stdafx.h
+| AUTHOR     : https://supercline.com/
 | PURPOSE    :
 |
 | SPEC       :
@@ -12,7 +12,7 @@
 |
 | Ver      Date            By              Details
 | -----    -----------    -------------   ----------------------
-| 1.0      2019-9-25      CLine           Created
+| 1.0      2019-9-25      SuperCLine           Created
 |
 +-----------------------------------------------------------------------------*/
 
